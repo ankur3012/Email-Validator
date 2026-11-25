@@ -4,212 +4,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iValidate: Email Validator For Business</title>
-    <!-- <link rel="stylesheet" href="css/style.css"> -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-
-
-
-* {
-    padding: 0;
-    margin: 0;
-    font-family: 'Noto sans', sans-serif;
-    font-family: 'poppins sans', sans-serif;
-}
-
-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: black;
-    color: white;
-    padding: 19px 12px;
-}
-
-ul {
-    display: flex;
-}
-
-ul li {
-    list-style: none;
-    padding: 0 13px;
-    font-size: 13px;
-}
-
-ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-ul>li>a:hover {
-    color: rgb(192, 189, 205);
-}
-
-main {
-    min-height: 100vh;
-}
-.logo img{
-    width: 15px;
-    filter: invert(1);
-}
-
-.container {
-    max-width: 80vw;
-    margin: auto;
-    padding: 9px 15px;
-}
-
-.container h1{
-    padding:12px 0;
-}
-
-input [type='text']{
-    min-width: 23vw;
-    padding: 3px 12px;
-    border: 2px solid black;
-    border radius: 4px;
-    font-size: 20px;
-}
-
-.btn{
-    background: black;
-    color: white;
-    padding: 9px 12px;
-    border: 1px solid white;
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-#resultCont div::first-letter{
-    text-transform: uppercase;
-}
-
-
-footer {
-    font-size: 12px;
-    background-color: black;
-    color: white;
-    display: flex;
-    padding: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-@media screen and (max-width: 600px) {
-    body {
-        
-    }
-
-    .container {
-        font-size: 12px;
-    }
-
-    nav {
-        flex-direction: column;
-    }
-
-    .logo {
-        padding: 6px 0;
-        font-size: 12px;
-    }
-    .logo span ;{
-    font-size: 20px;
-    }
-    .logo img{
-        width: 15px;
-        filter: invert(1);
-    }
-    }
-}
-    </style>
+    <title>iValidate — Pro Email Validator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <header>
         <nav>
-            <div class = "logo">
-                <img src="https://www.svgrepo.com/show/479622/email-18.svg" alt="Email svg">
-                <span>iValidate</span></div>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/">About</a></li>
-                <li><a href="/">Contact Us</a></li>
-            </ul>
+            <div class="logo">
+                <img src="https://www.svgrepo.com/show/479622/email-18.svg" alt="Logo">
+                <span>iValidate</span>
+            </div>
+            <div class="nav-right">
+                <button id="themeToggle" class="theme-btn" title="Toggle Theme">🌙</button>
+            </div>
         </nav>
     </header>
 
     <main>
-        <div class="container">
-            <h1>Enter your Email to Validate</h1>
-            <form action="/submit" method="post">
-                <!-- Text input for username -->
-                <input placeholder="Enter Your Email to Validate" type="text" id="username" name="username" required>
-                <br><br>
-            
-                <!-- Submit button -->
-                <input id ="submitBtn" class="btn" type="submit" value="Submit">
-              </form>
+        <div class="card">
+            <div class="tabs">
+                <button class="tab-btn active" id="singleTabBtn">Single Email</button>
+                <button class="tab-btn" id="bulkTabBtn">Bulk Validator</button>
+            </div>
+
+            <!-- Single Email Mode -->
+            <div id="singleMode">
+                <div class="hero-header">
+                    <h1>Verify Any Email Address</h1>
+                    <p>Check deliverability, SMTP status, and domain health in real time.</p>
+                </div>
+                <form id="validateForm" class="input-group">
+                    <input type="email" id="emailInput" placeholder="e.g. name@company.com" required>
+                    <button id="submitBtn" class="btn" type="submit">Validate</button>
+                </form>
+                <div id="suggestionArea" class="suggestion-box"></div>
+            </div>
+
+            <!-- Bulk Email Mode -->
+            <div id="bulkMode" style="display: none;">
+                <div class="hero-header">
+                    <h1>Bulk Email Validator</h1>
+                    <p>Paste multiple emails separated by commas or new lines (max 10 at once).</p>
+                </div>
+                <textarea id="bulkInput" placeholder="john@gmail.com&#10;support@company.com&#10;test@tempmail.com"></textarea>
+                <div class="center-btn">
+                    <button id="bulkSubmitBtn" class="btn">Validate All Emails</button>
+                </div>
+            </div>
         </div>
 
-        <div class="container">
-            <h2>Your Results</h2>
-            <div id ="resultCont">
-               Your results will show here.
-                
+        <!-- Loader -->
+        <div id="loader" class="loader-container">
+            <div class="spinner"></div>
+            <p class="loader-text">Checking mail servers...</p>
         </div>
+
+        <!-- Single Result Card -->
+        <div id="resultsCard" class="card" style="display: none;">
+            <div id="resultCont"></div>
+        </div>
+
+        <!-- Bulk Results Card -->
+        <div id="bulkResultsCard" class="card" style="display: none;">
+            <div class="result-header">
+                <h3>Bulk Validation Report</h3>
+                <button id="exportCsvBtn" class="btn-secondary">⬇ Export CSV</button>
+            </div>
+            <div class="bulk-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Disposable</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bulkTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent History -->
+        <div id="historySection" class="card" style="display: none;">
+            <div class="history-header">
+                <h3>Recent Checks</h3>
+                <button id="clearHistoryBtn" class="btn-secondary">Clear</button>
+            </div>
+            <div id="historyList" class="history-list"></div>
         </div>
     </main>
 
     <footer>
-        Copyrights | iValidate.com | All rights reserved
+        Copyright &copy; 2026 | iValidate.com | All rights reserved
     </footer>
-    <script>
-        console.log("This is my script")
 
-let result =
-{
-    "tag": "",
-    "free": true,
-    "role": false,
-    "user": "alluarjun",
-    "email": "alluarjun@gmail.com",
-    "score": 0.64,
-    "state": "deliverable",
-    "domain": "gmail.com",
-    "reason": "valid_mailbox",
-    "mx_found": true,
-    "catch_all": null,
-    "disposable": false,
-    "smtp_check": true,
-    "did_you_mean": "",
-    "format_valid": true
-}
-
-submitBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    console.log("Clicked!")
-    resultCont.innerHTML = `<img width = "123px" src="https://media.tenor.com/FawYo00tBekAAAAC/loading-thinking.gif" alt="loading">`
-    let key= "ema_live_HtN6m7j9BtAmjwtDPdqgieEPUTEqPGnOYo9tCpHC"
-    let email = document.getElementById("username").value
-    let url = `https://api.emailvalidation.io/v1/info?apikey=${key}&email=${email}`
-    let res = await fetch(url)
-    let result = await res.json()
-
-let str = ``
-    for (key of Object.keys(result)) {
-        if (result[key] !== "" && result[key] !== " ") { 
-
-            str = str + `<div>${key}: ${result[key]}</div>`
-        }
-}
-console.log(str)
-resultCont.innerHTML = str
-})
-    </script>
-    <!-- <script src="js/index.js"></script> -->
+    <script src="index.js"></script>
 </body>
-
 
 </html>
